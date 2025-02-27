@@ -1,26 +1,16 @@
-import Navbar from "@/components/Navbar";
-import "@/styles/globals.css";
-import { useEffect, useState } from "react";
-import { auth } from "../firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+// pages/_app.js
 
+import Navbar from "../components/Navbar";  // Adjusted to the components folder path
+import "../styles/globals.css";
+import { UserProvider } from "../pages/context/UserContext";  // Import UserProvider from the UserContext file
 
-
-export default function MyApp({ Component, pageProps }) {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
-
+function MyApp({ Component, pageProps }) {
   return (
-
-    <div>
+    <UserProvider> {/* Wrap your app with UserProvider */}
       <Navbar />
-      <Component {...pageProps} user={user} />
-    </div>
+      <Component {...pageProps} />
+    </UserProvider>
   );
 }
+
+export default MyApp;
