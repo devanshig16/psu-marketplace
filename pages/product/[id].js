@@ -37,20 +37,16 @@ const ProductDetail = () => {
     }
 
     try {
-      // Reference to the user's cart in Firestore
-      const cartRef = doc(db, "carts", user.uid); // Use the user's UID as the document ID for their cart
+      const cartRef = doc(db, "carts", user.uid);
 
-      // Fetch the current cart data for the user
       const cartDoc = await getDoc(cartRef);
 
-      // If the cart doesn't exist, create a new one
       if (!cartDoc.exists()) {
         await setDoc(cartRef, {
           userId: user.uid,
           items: [{ ...product, quantity: 1 }],
         });
       } else {
-        // If the cart exists, update it by adding the product
         const currentCart = cartDoc.data();
         const updatedItems = [...currentCart.items, { ...product, quantity: 1 }];
         await setDoc(cartRef, {
@@ -60,7 +56,7 @@ const ProductDetail = () => {
       }
 
       alert("Added to Cart!");
-      router.push("/cart"); // Navigate to the cart page
+      router.push("/cart");
     } catch (error) {
       console.error("Error adding product to cart:", error);
       alert("Failed to add product to cart.");
@@ -70,23 +66,55 @@ const ProductDetail = () => {
   if (!product) return <p>Loading...</p>;
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold text-black">{product.title}</h1>
-      <img
-        src={product.imageUrl}
-        alt={product.title}
-        className="w-full h-80 object-cover rounded"
-      />
-      <p className="text-black mt-4">{product.description}</p>
-      <p className="text-black mt-4">Price: ${product.price}</p>
-      <p className="text-black mt-4">{product.location}</p>
-      <button
-        type="button"
-        className="w-full bg-black text-white p-2 mt-4 rounded-lg"
-        onClick={() => BuyProduct(product)}
-      >
-        Buy
-      </button>
+    <div className="min-h-screen bg-gray-50 py-16 px-6 sm:px-8 lg:px-12">
+      <div className="max-w-7xl mx-auto bg-white shadow-2xl rounded-lg overflow-hidden">
+        <div className="lg:flex items-center p-6">
+          {/* Left: Image Section */}
+          <div className="lg:w-1/2">
+            <img
+              src={product.imageUrl}
+              alt={product.title}
+              className="w-full h-full object-cover rounded-lg shadow-lg transform transition duration-500 hover:scale-105"
+            />
+          </div>
+
+          {/* Right: Product Details Section */}
+          <div className="lg:w-1/2 lg:pl-12 mt-6 lg:mt-0">
+            <h1 className="text-4xl font-extrabold text-gray-900">{product.title}</h1>
+            <p className="text-xl text-gray-600 mt-4">{product.description}</p>
+
+            <div className="mt-6">
+              {/* Price */}
+              <p className="text-3xl font-semibold text-gray-900">${product.price}</p>
+
+              {/* Location */}
+              <p className="text-lg text-gray-500 mt-2">{product.location}</p>
+
+              {/* Category */}
+              <p className="text-lg text-gray-500 mt-2">{product.category}</p>
+
+              {/* Condition */}
+              <p className="text-lg text-gray-500 mt-2">Condition: {product.condition}</p>
+
+              {/* Condition Explanation */}
+              {product.conditionExplanation && (
+                <p className="text-lg text-gray-500 mt-2">
+                  Condition Explanation: {product.conditionExplanation}
+                </p>
+              )}
+            </div>
+
+            {/* Add to Cart Button */}
+            <button
+              type="button"
+              className="mt-8 w-full bg-gradient-to-r from-black to-gray-800 text-white py-3 rounded-lg hover:bg-black focus:outline-none transition ease-in-out duration-300 shadow-md transform transition duration-200 hover:scale-105"
+              onClick={() => BuyProduct(product)}
+            >
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -3,8 +3,6 @@ import { auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import 'leaflet/dist/leaflet.css';
-
 
 export default function Welcome() {
   const [user, setUser] = useState(null);
@@ -21,11 +19,10 @@ export default function Welcome() {
     return () => unsubscribe();
   }, [router]);
 
-
   return (
     <div
-    className="flex flex-col items-center justify-center h-screen bg-cover bg-center"
-   
+      className="flex flex-col items-center justify-center h-screen bg-cover bg-center"
+      style={{ backgroundImage: "url('/images/steve-wrzeszczynski-e-owFOTArBc-unsplash.jpg')" }} // Corrected path
     >
       <div className="bg-white p-8 rounded-lg shadow-lg text-center">
         <h1 className="text-3xl font-bold text-black">Buy, Sell, and Connect with PSU Students!</h1>

@@ -9,14 +9,16 @@ export default function Profile() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
-  const [sellerAccountId, setSellerAccountId] = useState(null); // ✅ Store Stripe account ID
+  const [sellerAccountId, setSellerAccountId] = useState(null); // Store Stripe account ID
+  const [isSeller, setIsSeller] = useState(false); // Check if the user is a seller
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         setUser(user);
         fetchUserListings(user.uid);
-        fetchSellerAccountId(user.uid); // ✅ Fetch Stripe account ID
+        fetchSellerAccountId(user.uid); // Fetch Stripe account ID
+        checkSellerStatus(user.uid); // Check if user is a seller
       } else {
         setUser(null);
         setSellerAccountId(null);
@@ -39,7 +41,7 @@ export default function Profile() {
     return () => unsubscribe();
   };
 
-  // ✅ Fetch the seller's Stripe Account ID from Firestore
+  // Fetch the seller's Stripe Account ID from Firestore
   const fetchSellerAccountId = async (userId) => {
     try {
       const userDocRef = doc(db, "users", userId);
@@ -58,12 +60,28 @@ export default function Profile() {
     }
   };
 
+  // Check if the user is a seller (seller field as a string)
+  const checkSellerStatus = async (userId) => {
+    try {
+      const userDocRef = doc(db, "users", userId);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        setIsSeller(data.seller === "true"); // Check seller status as a string
+      }
+    } catch (error) {
+      console.error("Error checking seller status:", error);
+    }
+  };
+
+  // Onboard the user with Stripe
   const onboardSeller = async () => {
     try {
       const response = await fetch("/api/create-onboarding-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user.uid }), // Send userId instead of sellerAccountId
+        body: JSON.stringify({ userId: user.uid }), // Send userId
       });
 
       const data = await response.json();
@@ -75,6 +93,17 @@ export default function Profile() {
       }
     } catch (error) {
       console.error("Onboarding error:", error);
+    }
+  };
+
+  // Update Firestore after Stripe onboarding to set seller to "true"
+  const updateSellerStatus = async () => {
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+      await setDoc(userDocRef, { seller: "true" }, { merge: true }); // Set seller as a string "true"
+      setIsSeller(true); // Update local state to reflect seller status
+    } catch (error) {
+      console.error("Error updating seller status:", error);
     }
   };
 
@@ -90,25 +119,20 @@ export default function Profile() {
         <p className="text-sm text-red-500">Please log in to view your profile.</p>
       )}
   
-      {/* ✅ If the user has a Stripe account, show onboarding button */}
-      {sellerAccountId ? (
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded-md"
-          onClick={onboardSeller}
-        >
-          Complete Stripe Onboarding
-        </button>
+      {/* If the user is not a seller, show the onboarding button */}
+      {!isSeller ? (
+        <div className="mt-4">
+          <p className="text-sm text-red-500">You need to onboard with Stripe to become a seller.</p>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-md"
+            onClick={onboardSeller}
+          >
+            Onboard with Stripe
+          </button>
+        </div>
       ) : (
         <div className="mt-4">
-          <p className="text-sm text-red-500">No Stripe account linked.</p>
-          <a
-            href="https://connect.stripe.com/oauth/authorize?redirect_uri=https://connect.stripe.com/hosted/oauth&client_id=ca_Rqvf9sjrcNvQTcd0RwQr1oWKllwPhKzh&state=onbrd_RqvrYm9HqtXy2LhszjvDbP333g&response_type=code&scope=read_write&stripe_user[country]=US"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 underline mt-2 block"
-          >
-            Become a Seller (Connect to Stripe)
-          </a>
+          <p className="text-sm text-green-500">You're now a seller! You can list products.</p>
         </div>
       )}
   

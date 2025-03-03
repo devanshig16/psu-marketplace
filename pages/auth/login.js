@@ -13,8 +13,15 @@ const Login = () => {
 
     try {
       const result = await signInWithPopup(auth, provider);
-      console.log("User:", result.user);
-      
+      const user = result.user;
+
+      // Validate email to ensure it ends with @psu.edu
+      if (!user.email.endsWith("@psu.edu")) {
+        alert("Must be a @psu.edu credential");
+        setLoading(false);
+        return;
+      }
+
       // Redirect to home page after successful login
       router.push("/home");
     } catch (error) {
@@ -25,7 +32,15 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-200">
+    <div
+      className="flex justify-center items-center h-screen"
+      style={{
+        backgroundImage: "url('/images/steve-wrzeszczynski-TW9sIUdrxjA-unsplash.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <div className="bg-white p-8 rounded-lg shadow-lg w-96">
         <h1 className="text-2xl font-bold text-center text-black">Login</h1>
 
@@ -33,7 +48,7 @@ const Login = () => {
         <button
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className={`w-full px-6 py-2 rounded-lg mt-4 ${loading ? "bg-gray-400" : "bg-purple-500 text-white"}`}
+          className={`w-full px-6 py-2 rounded-lg mt-4 ${loading ? "bg-gray-400" : "bg-blue-800 text-white"}`}
         >
           {loading ? "Signing in..." : "Sign in with Google"}
         </button>

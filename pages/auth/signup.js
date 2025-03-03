@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { signInWithPopup } from "firebase/auth";
-import { auth, provider, db } from "../../firebase"; // Ensure the correct import path for db
-import { setDoc, doc } from "firebase/firestore"; // Add this import for Firestore functions
+import { auth, provider, db } from "../../firebase"; // Ensure correct import path for db
+import { setDoc, doc, getDoc } from "firebase/firestore"; // Import necessary Firestore functions
 import { useRouter } from "next/router";
 
 const SignUp = () => {
@@ -16,15 +16,32 @@ const SignUp = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Check if user already exists in Firestore
-      // Assuming that "users" collection exists in Firestore
-      const userRef = doc(db, "users", user.uid);
-      await setDoc(userRef, {
-        name: user.displayName,
-        email: user.email,
-      }, { merge: true });
+      // Validate email to ensure it ends with @psu.edu
+      if (!user.email.endsWith("@psu.edu")) {
+        alert("Must be a @psu.edu credential");
+        setLoading(false);
+        return;
+      }
 
-      router.push("/"); // Redirect after successful Google sign-up
+      // Check if user already exists in Firestore
+      const userRef = doc(db, "users", user.uid); // Set document reference in Firestore
+      const userDoc = await getDoc(userRef);
+
+      // If user does not exist, create a new document
+      if (!userDoc.exists()) {
+        // Save user information in Firestore
+        await setDoc(userRef, {
+          name: user.displayName,
+          email: user.email,
+          seller: false,
+        });
+        console.log("User successfully created in Firestore.");
+      } else {
+        console.log("User already exists in Firestore.");
+      }
+
+      // Redirect after successful Google sign-up
+      router.push("/"); // Redirect to home page
     } catch (error) {
       console.error("Google Sign-In Error:", error);
     } finally {
@@ -33,7 +50,15 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-200">
+    <div
+      className="flex justify-center items-center h-screen"
+      style={{
+        backgroundImage: "url('/images/steve-wrzeszczynski-TW9sIUdrxjA-unsplash.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <div className="bg-white p-8 rounded-lg shadow-lg w-96">
         <h2 className="text-2xl font-bold text-center text-black">Sign Up</h2>
 
@@ -41,7 +66,7 @@ const SignUp = () => {
         <button
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className={`w-full px-6 py-2 rounded-lg mt-4 ${loading ? "bg-gray-400" : "bg-red-500 text-white"}`}
+          className={`w-full px-6 py-2 rounded-lg mt-4 ${loading ? "bg-gray-400" : "bg-blue-800 text-white"}`}
         >
           {loading ? "Signing up..." : "Sign up with Google"}
         </button>

@@ -39,7 +39,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="bg-primary text-white p-4 flex justify-between items-center">
+    <nav className=" text-white bg-blue-900 p-4 flex justify-between items-center">
       <Link href="/" className="text-xl font-bold">PSU Marketplace</Link>
       
       {user ? (
@@ -58,7 +58,7 @@ const Navbar = () => {
               signOut(auth);
               router.push("/"); // Redirect after logout
             }}
-            className="bg-red-500 text-white px-3 py-1 rounded-md"
+            className="bg-blue-200 text-black px-3 py-1 rounded-md"
           >
             Logout
           </button>
