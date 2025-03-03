@@ -2,7 +2,7 @@
 
 import Navbar from "../components/Navbar";  // Adjusted to the components folder path
 import "../styles/globals.css";
-import { UserProvider } from "../pages/context/UserContext";  // Import UserProvider from the UserContext file
+import { UserProvider } from "../UserContext";  // Import UserProvider from the UserContext file
 
 function MyApp({ Component, pageProps }) {
   return (

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { db } from "../firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { useUser } from "/pages/context/UserContext"; // Assuming you're using a UserContext
+import { useUser } from "../UserContext"; // Assuming you're using a UserContext
 import { loadStripe } from "@stripe/stripe-js";
 
 const Cart = () => {

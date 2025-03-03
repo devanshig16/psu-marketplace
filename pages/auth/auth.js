@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { auth, provider, signOut } from "../../psu-marketplace/firebase";
+import { provider, signOut } from "/firebase";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 
 export default function AuthPage() {
