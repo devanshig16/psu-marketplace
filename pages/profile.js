@@ -102,7 +102,7 @@ export default function Profile() {
         <div className="mt-4">
           <p className="text-sm text-red-500">No Stripe account linked.</p>
           <a
-            href="https://connect.stripe.com/oauth/authorize?redirect_uri=https://connect.stripe.com/hosted/oauth&client_id=ca_RqUSJ9PoJ9aqdGZN1S16d2yHGr1z9qqn&state=onbrd_RqvHkdwQjsTo8opcF1AMEDbb6l&response_type=code&scope=read_write&stripe_user[country]=US"
+            href="https://connect.stripe.com/oauth/authorize?redirect_uri=https://connect.stripe.com/hosted/oauth&client_id=ca_Rqvf9sjrcNvQTcd0RwQr1oWKllwPhKzh&state=onbrd_RqvrYm9HqtXy2LhszjvDbP333g&response_type=code&scope=read_write&stripe_user[country]=US"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 underline mt-2 block"
