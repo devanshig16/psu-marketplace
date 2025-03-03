@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { auth, provider, signInWithPopup, signOut } from "firebase/auth";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-
+import { auth, signOut } from "../../psu-marketplace/firebase"; 
 useEffect(() => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
   if (storedUser) {
