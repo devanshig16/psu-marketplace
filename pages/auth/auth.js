@@ -1,38 +1,40 @@
-import { useState } from "react";
-import { auth, provider, signInWithPopup, signOut } from "firebase/auth";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, signOut } from "../../psu-marketplace/firebase"; 
-useEffect(() => {
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-  if (storedUser) {
-    setUser(storedUser);
-  }
-}, []);
+import { useState, useEffect } from "react";
+import { auth, provider, signOut } from "../../psu-marketplace/firebase";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 
-const handleGoogleSignIn = async () => {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    setUser(user);
-    localStorage.setItem("user", JSON.stringify(user));
-  } catch (error) {
-    console.error("Google Sign-In Error:", error);
-  }
-};
-
-const handleSignOut = () => {
-  signOut(auth)
-    .then(() => {
-      setUser(null);
-      localStorage.removeItem("user");
-    })
-    .catch((error) => console.error("Sign Out Error:", error));
-};
 export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState("");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      setUser(storedUser);
+    }
+  }, []);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      setUser(user);
+      localStorage.setItem("user", JSON.stringify(user));
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+    }
+  };
+
+  const handleSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        setUser(null);
+        localStorage.removeItem("user");
+      })
+      .catch((error) => console.error("Sign Out Error:", error));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,29 +83,29 @@ export default function AuthPage() {
           {isLogin ? "Sign Up" : "Login"}
         </span>
       </p>
-    {!user ? (
-      <button
-        onClick={handleGoogleSignIn}
-        className="bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600"
-      >
-        Sign in with Google
-      </button>
-    ) : (
-      <div className="text-center">
-        <h2 className="text-xl">Welcome, {user.displayName}</h2>
-        <img
-          src={user.photoURL}
-          alt="Profile"
-          className="rounded-full w-24 h-24 mx-auto my-4"
-        />
+      {!user ? (
         <button
-          onClick={handleSignOut}
-          className="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900"
+          onClick={handleGoogleSignIn}
+          className="bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600"
         >
-          Sign Out
+          Sign in with Google
         </button>
-      </div>
-    )}
+      ) : (
+        <div className="text-center">
+          <h2 className="text-xl">Welcome, {user.displayName}</h2>
+          <img
+            src={user.photoURL}
+            alt="Profile"
+            className="rounded-full w-24 h-24 mx-auto my-4"
+          />
+          <button
+            onClick={handleSignOut}
+            className="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900"
+          >
+            Sign Out
+          </button>
+        </div>
+      )}
     </div>
   );
 }
