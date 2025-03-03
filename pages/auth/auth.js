@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { auth, provider, signInWithPopup, signOut } from "/firebase";
+import { auth, provider, signInWithPopup, signOut } from "firebase/auth";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 
 useEffect(() => {
