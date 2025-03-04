@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
-import { collection, query, where, onSnapshot, doc, deleteDoc, getDoc, setDoc } from "firebase/firestore";
+import { collection, query, where, onSnapshot, doc, getDoc } from "firebase/firestore";
 import ModifyProduct from "../components/ModifyProduct"; // Edit modal component
+
 
 export default function Profile() {
   
@@ -12,6 +13,9 @@ export default function Profile() {
   const [sellerAccountId, setSellerAccountId] = useState(null); // Store Stripe account ID
   const [isSeller, setIsSeller] = useState(false); // Check if the user is a seller
 
+
+
+  
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -22,6 +26,7 @@ export default function Profile() {
       } else {
         setUser(null);
         setSellerAccountId(null);
+        setIsSeller(false); // Reset seller status on logout
       }
     });
 
@@ -65,7 +70,7 @@ export default function Profile() {
     try {
       const userDocRef = doc(db, "users", userId);
       const userDoc = await getDoc(userDocRef);
-      
+
       if (userDoc.exists()) {
         const data = userDoc.data();
         setIsSeller(data.seller === "true"); // Check seller status as a string
@@ -75,7 +80,6 @@ export default function Profile() {
     }
   };
 
-  // Onboard the user with Stripe
   const onboardSeller = async () => {
     try {
       const response = await fetch("/api/create-onboarding-link", {
@@ -87,7 +91,8 @@ export default function Profile() {
       const data = await response.json();
 
       if (data.url) {
-        window.location.href = data.url; // Redirect to Stripe onboarding
+        // Redirect to the Stripe onboarding page
+        window.location.href = data.url;
       } else {
         console.error("Error fetching onboarding link", data.error);
       }
@@ -96,15 +101,42 @@ export default function Profile() {
     }
   };
 
-  // Update Firestore after Stripe onboarding to set seller to "true"
-  const updateSellerStatus = async () => {
-    try {
-      const userDocRef = doc(db, "users", user.uid);
-      await setDoc(userDocRef, { seller: "true" }, { merge: true }); // Set seller as a string "true"
-      setIsSeller(true); // Update local state to reflect seller status
-    } catch (error) {
-      console.error("Error updating seller status:", error);
+  // This function will be called when the user returns from Stripe after completing onboarding
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get("userId");
+
+    if (userId) {
+      // Send a request to update the user's seller status
+      fetch(`/api/update-seller-status?userId=${userId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.message) {
+            setIsSeller(true);
+          }
+        })
+        .catch((error) => {
+          console.error("Error updating seller status:", error);
+        });
     }
+  }, []);
+
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+  };
+
+  const closeEditModal = () => {
+    setEditingProduct(null);
+  };
+
+  const handleDelete = async (product) => {
+    setLoading(true);
+    try {
+      await deleteDoc(doc(db, "products", product.id));
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+    setLoading(false);
   };
 
   return (
@@ -118,24 +150,23 @@ export default function Profile() {
       ) : (
         <p className="text-sm text-red-500">Please log in to view your profile.</p>
       )}
-  
-      {/* If the user is not a seller, show the onboarding button */}
-      {!isSeller ? (
-        <div className="mt-4">
-          <p className="text-sm text-red-500">You need to onboard with Stripe to become a seller.</p>
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
-            onClick={onboardSeller}
-          >
-            Onboard with Stripe
-          </button>
+
+      {isSeller ? (
+        <div className="mt-4 text-green-800">
+          <p>You are a verified seller! You can now list products.</p>
         </div>
       ) : (
         <div className="mt-4">
-          <p className="text-sm text-green-500">You're now a seller! You can list products.</p>
+          <p className="text-sm text-red-500">No Stripe account linked.</p>
+          <button
+            onClick={onboardSeller}
+            className="text-blue-500 underline mt-2 block"
+          >
+            Become a Seller (Connect to Stripe)
+          </button>
         </div>
       )}
-  
+
       <h2 className="text-2xl font-bold mt-8">Your Listings</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         {products.length > 0 ? (
@@ -169,7 +200,7 @@ export default function Profile() {
           <p className="text-gray-500">You haven't listed any products yet.</p>
         )}
       </div>
-  
+
       {editingProduct && (
         <ModifyProduct
           product={editingProduct}

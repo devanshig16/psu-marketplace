@@ -16,12 +16,7 @@ const SignUp = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Validate email to ensure it ends with @psu.edu
-      if (!user.email.endsWith("@psu.edu")) {
-        alert("Must be a @psu.edu credential");
-        setLoading(false);
-        return;
-      }
+     
 
       // Check if user already exists in Firestore
       const userRef = doc(db, "users", user.uid); // Set document reference in Firestore
@@ -44,7 +39,6 @@ const SignUp = () => {
       router.push("/"); // Redirect to home page
     } catch (error) {
       console.error("Google Sign-In Error:", error);
-    } finally {
       setLoading(false);
     }
   };

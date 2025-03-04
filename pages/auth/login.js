@@ -15,18 +15,12 @@ const Login = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Validate email to ensure it ends with @psu.edu
-      if (!user.email.endsWith("@psu.edu")) {
-        alert("Must be a @psu.edu credential");
-        setLoading(false);
-        return;
-      }
+     
 
       // Redirect to home page after successful login
       router.push("/home");
     } catch (error) {
       console.error("Google Sign-In Error:", error);
-    } finally {
       setLoading(false);
     }
   };
