@@ -2,7 +2,6 @@ import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
@@ -32,12 +31,20 @@ export default async function handler(req, res) {
 
     console.log("Formatted line items:", line_items);
 
+    // Ensure the base URL is set correctly
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://yourdefaulturl.com"; // Fallback URL in case the env variable is not set
+
+    if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+      console.error("Invalid base URL:", baseUrl);
+      return res.status(500).json({ error: "Invalid base URL" });
+    }
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items,
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cart`,
+      success_url: `${baseUrl}/success`,
+      cancel_url: `${baseUrl}/cart`,
     });
 
     console.log("Stripe session created:", session);
