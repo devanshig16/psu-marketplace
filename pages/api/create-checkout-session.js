@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     console.log("Formatted line items:", line_items);
 
     // Ensure the base URL is set correctly
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://psu-marketplace.vercel.app/home"; // Fallback URL in case the env variable is not set
+    const baseUrl = "https://psu-marketplace.vercel.app"; // Fallback URL in case the env variable is not set
 
     if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
       console.error("Invalid base URL:", baseUrl);
