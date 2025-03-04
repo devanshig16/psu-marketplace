@@ -10,30 +10,34 @@ const Login = () => {
 
   // Handle Google Sign-In
   const handleGoogleSignIn = async () => {
-    setLoading(true); // Prevent multiple clicks
-
+    setLoading(true);
+  
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-
-      // Check if the user exists in Firestore
-      const userRef = doc(db, "users", user.uid); // Set document reference in Firestore
+  
+      // Ensure the email ends with "@psu.edu"
+      if (!user.email.endsWith("@psu.edu")) {
+        setLoading(false);
+        return;
+      }
+  
+      const userRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userRef);
-
-      // If user doesn't exist, show an alert and redirect to the sign-up page
+  
       if (!userDoc.exists()) {
-        alert("Sign in first"); // Show alert message
-        router.push("/auth/signup"); // Redirect to sign-up page after alert is dismissed
+        alert("No account found. Please sign up first.");
+        router.push("/auth/signup");
       } else {
-        // User exists, proceed with login and redirect to home page
         console.log("User logged in successfully.");
-        router.push("/home"); // Redirect to home page after successful login
+        router.push("/home");
       }
     } catch (error) {
       console.error("Google Sign-In Error:", error);
       setLoading(false);
     }
   };
+  
 
   return (
     <div
