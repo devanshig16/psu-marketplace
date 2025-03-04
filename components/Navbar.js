@@ -18,7 +18,7 @@ const Navbar = () => {
         // Ensure the email ends with "@psu.edu"
         if (!currentUser.email.endsWith("@psu.edu")) {
           setAlertMessage("Only PSU students with @psu.edu emails can access this site.");
-          setTimeout(() => setAlertMessage(""), 10000); // Hide alert after 10 seconds
+          setTimeout(() => setAlertMessage(""), 800); 
           await signOut(auth);
           setUser(null);
           setUserName(null);
