@@ -124,10 +124,10 @@ export default function Profile() {
 
   return (
     <div className="container mx-auto mt-8">
-      <h1 className="text-2xl font-bold">Your Profile</h1>
+      <h1 className="text-2xl font-bold text-black">Your Profile</h1>
       {user ? (
         <div>
-          <h2 className="text-xl mt-4">Welcome, {user.displayName || "User"}</h2>
+          <h2 className="text-xl mt-4 text-black">Welcome, {user.displayName || "User"}</h2>
           <p className="text-sm text-gray-600">Email: {user.email}</p>
         </div>
       ) : (
@@ -150,7 +150,7 @@ export default function Profile() {
         </div>
       )}
 
-      <h2 className="text-2xl font-bold mt-8">Your Listings</h2>
+      <h2 className="text-2xl font-bold mt-8 text-black">Your Listings</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         {products.length > 0 ? (
           products.map((product) => (
@@ -165,14 +165,14 @@ export default function Profile() {
               <p className="text-sm text-black">{product.description}</p>
               <button
                 onClick={() => handleEdit(product)}
-                className="bg-blue-500 text-white p-2 mt-2 rounded"
+                className="bg-blue-500 text-black p-2 mt-2 rounded"
                 disabled={loading}
               >
                 Edit
               </button>
               <button
                 onClick={() => handleDelete(product)}
-                className="bg-red-500 text-white p-2 mt-2 rounded ml-2"
+                className="bg-red-500 text-black p-2 mt-2 rounded ml-2"
                 disabled={loading}
               >
                 {loading ? "Deleting..." : "Delete"}
