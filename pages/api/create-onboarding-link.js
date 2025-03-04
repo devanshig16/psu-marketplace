@@ -29,6 +29,18 @@ export default async function handler(req, res) {
         country: "US",
         email: userDocSnap.data().email,
         capabilities: { transfers: { requested: true } },
+        business_type: "individual", // You can change this to "company" if needed
+        individual: {
+          first_name: userDocSnap.data().firstName,
+          last_name: userDocSnap.data().lastName,
+          dob: { day: 1, month: 1, year: 1990 }, // Example: provide actual date of birth
+          email: userDocSnap.data().email, // Ensure you have an email for the individual
+        },
+        // You may also need to include company information if it's a business account:
+        // company: {
+        //   name: "Example Business",
+        //   tax_id: "1234567890", // Optional depending on your use case
+        // },
       });
 
       stripeAccountId = account.id;
