@@ -80,26 +80,7 @@ export default function Profile() {
     }
   };
 
-  const onboardSeller = async () => {
-    try {
-      const response = await fetch("/api/create-onboarding-link", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user.uid }), // Send userId
-      });
-
-      const data = await response.json();
-
-      if (data.url) {
-        // Redirect to the Stripe onboarding page
-        window.location.href = data.url;
-      } else {
-        console.error("Error fetching onboarding link", data.error);
-      }
-    } catch (error) {
-      console.error("Onboarding error:", error);
-    }
-  };
+  
 
   // This function will be called when the user returns from Stripe after completing onboarding
   useEffect(() => {
@@ -139,6 +120,8 @@ export default function Profile() {
     setLoading(false);
   };
 
+  const stripeOauthUrl = `https://connect.stripe.com/oauth/authorize?redirect_uri=https://connect.stripe.com/hosted/oauth&client_id=ca_Rqvf9sjrcNvQTcd0RwQr1oWKllwPhKzh&state=onbrd_RsXAA64TQLFpKcMy28zwo01CQp&response_type=code&scope=read_write&stripe_user[country]=US`;
+
   return (
     <div className="container mx-auto mt-8">
       <h1 className="text-2xl font-bold">Your Profile</h1>
@@ -158,12 +141,12 @@ export default function Profile() {
       ) : (
         <div className="mt-4">
           <p className="text-sm text-red-500">No Stripe account linked.</p>
-          <button
-            onClick={onboardSeller}
+          <a
+            href={stripeOauthUrl} // Directly use the hardcoded Stripe OAuth URL
             className="text-blue-500 underline mt-2 block"
           >
             Become a Seller (Connect to Stripe)
-          </button>
+          </a>
         </div>
       )}
 
