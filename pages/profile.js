@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
 import { collection, query, where, onSnapshot, doc, getDoc } from "firebase/firestore";
 import ModifyProduct from "../components/ModifyProduct"; // Edit modal component
-
+import { deleteDoc } from "firebase/firestore";
 
 export default function Profile() {
   
@@ -82,25 +82,7 @@ export default function Profile() {
 
   
 
-  // This function will be called when the user returns from Stripe after completing onboarding
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const userId = params.get("userId");
-
-    if (userId) {
-      // Send a request to update the user's seller status
-      fetch(`/api/update-seller-status?userId=${userId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.message) {
-            setIsSeller(true);
-          }
-        })
-        .catch((error) => {
-          console.error("Error updating seller status:", error);
-        });
-    }
-  }, []);
+  
 
   const handleEdit = (product) => {
     setEditingProduct(product);
@@ -113,7 +95,8 @@ export default function Profile() {
   const handleDelete = async (product) => {
     setLoading(true);
     try {
-      await deleteDoc(doc(db, "products", product.id));
+      await deleteDoc(doc(db, "products", product.id)); // Delete from Firestore
+      setProducts((prevProducts) => prevProducts.filter((p) => p.id !== product.id)); // Update UI
     } catch (error) {
       console.error("Error deleting product:", error);
     }
@@ -127,7 +110,7 @@ export default function Profile() {
       <h1 className="text-2xl font-bold text-black">Your Profile</h1>
       {user ? (
         <div>
-          <h2 className="text-xl mt-4 text-black">Welcome, {user.displayName || "User"}</h2>
+          <h2 className="text-xl mt-4 text-black">Welcome, {user.name}</h2>
           <p className="text-sm text-gray-600">Email: {user.email}</p>
         </div>
       ) : (
@@ -183,20 +166,22 @@ export default function Profile() {
           <p className="text-gray-500">You haven't listed any products yet.</p>
         )}
       </div>
-
+      {/* Modal Overlay */}
       {editingProduct && (
-        <ModifyProduct
-          product={editingProduct}
-          onClose={closeEditModal}
-          onProductUpdated={(updatedProduct) => {
-            setProducts((prevProducts) =>
-              prevProducts.map((prod) =>
-                prod.id === updatedProduct.id ? updatedProduct : prod
-              )
-            );
-            closeEditModal();
-          }}
-        />
+              <div className="fixed top-0 left-0 right-0 bottom-0 bg-gray-600 bg-opacity-50 z-50 flex items-center justify-center">
+                <ModifyProduct
+                  product={editingProduct}
+                  onClose={closeEditModal}
+                  onProductUpdated={(updatedProduct) => {
+                    setProducts((prevProducts) =>
+                      prevProducts.map((prod) =>
+                        prod.id === updatedProduct.id ? updatedProduct : prod
+                      )
+                    );
+                    closeEditModal();
+            }}
+          />
+        </div>
       )}
     </div>
   );

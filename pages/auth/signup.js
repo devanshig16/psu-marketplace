@@ -28,7 +28,7 @@ const SignUp = () => {
         await setDoc(userRef, {
           name: user.displayName,
           email: user.email,
-          seller: false,
+          seller: "false",
         });
         console.log("User successfully created in Firestore.");
       } else {

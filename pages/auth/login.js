@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../../firebase"; // Make sure the import path is correct
+import { auth, provider, db } from "../../firebase"; // Ensure correct import path for db
+import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
 import { useRouter } from "next/router";
 
 const Login = () => {
@@ -15,10 +16,19 @@ const Login = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-     
+      // Check if the user exists in Firestore
+      const userRef = doc(db, "users", user.uid); // Set document reference in Firestore
+      const userDoc = await getDoc(userRef);
 
-      // Redirect to home page after successful login
-      router.push("/home");
+      // If user doesn't exist, show an alert and redirect to the sign-up page
+      if (!userDoc.exists()) {
+        alert("Sign in first"); // Show alert message
+        router.push("/auth/signup"); // Redirect to sign-up page after alert is dismissed
+      } else {
+        // User exists, proceed with login and redirect to home page
+        console.log("User logged in successfully.");
+        router.push("/home"); // Redirect to home page after successful login
+      }
     } catch (error) {
       console.error("Google Sign-In Error:", error);
       setLoading(false);

@@ -5,7 +5,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
-const Navbar = () => {
+const Navbar = ({}) => {
   const [user, setUser] = useState(null);
   const [userName, setUserName] = useState(null); // Initially null
   const [loading, setLoading] = useState(true); // Loading state to handle user data fetch
