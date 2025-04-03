@@ -15,12 +15,13 @@ const Login = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      
   
       // Ensure the email ends with "@psu.edu"
-      if (!user.email.endsWith("@psu.edu")) {
-        setLoading(false);
-        return;
-      }
+      //if (!user.email.endsWith("@psu.edu")) {
+        //setLoading(false);
+        //return;
+      //}
   
       const userRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userRef);

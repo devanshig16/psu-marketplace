@@ -16,6 +16,7 @@ const Navbar = () => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         // Ensure the email ends with "@psu.edu"
+        /*
         if (!currentUser.email.endsWith("@psu.edu")) {
           setAlertMessage("Only PSU students with @psu.edu emails can access this site.");
           setTimeout(() => setAlertMessage(""), 800); 
@@ -24,7 +25,7 @@ const Navbar = () => {
           setUserName(null);
           router.push("/auth/login"); // Redirect to login
           return;
-        }
+        }*/
 
         try {
           // Fetch user data from Firestore
