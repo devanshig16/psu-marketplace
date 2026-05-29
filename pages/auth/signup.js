@@ -16,11 +16,11 @@ const SignUp = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
   
-      // Ensure the email ends with "@psu.edu"
-      //if (!user.email.endsWith("@psu.edu")) {
-        //setLoading(false);
-        //return;
-      //}
+    
+      if (!user.email.endsWith("@psu.edu")) {
+        setLoading(false);
+        return;
+      }
   
 
       // Firestore check
