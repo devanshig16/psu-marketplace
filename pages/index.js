@@ -3,6 +3,7 @@ import { auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function Welcome() {
   const [user, setUser] = useState(null);
@@ -21,22 +22,35 @@ export default function Welcome() {
 
   return (
     <div
-      className="flex flex-col items-center justify-center h-screen bg-cover bg-center"
-      style={{ backgroundImage: "url('/images/steve-wrzeszczynski-e-owFOTArBc-unsplash.jpg')" }} // Corrected path
+      className="relative flex h-screen flex-col items-center justify-center bg-cover bg-center"
+      style={{ backgroundImage: "url('/images/steve-wrzeszczynski-e-owFOTArBc-unsplash.jpg')" }}
     >
-      <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-        <h1 className="text-3xl font-bold text-black">Buy, Sell, and Connect with PSU Students!</h1>
-        <p className="mt-2 text-black">A safe marketplace exclusively for Penn State students.</p>
+      <div className="absolute inset-0 bg-blue-950/40" />
 
-        <div className="mt-6 space-x-4">
-          <Link href="/auth/login" className="bg-blue-600 text-white px-4 py-2 rounded-lg">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="relative rounded-2xl bg-white/95 p-10 text-center shadow-xl backdrop-blur"
+      >
+        <h1 className="text-3xl font-bold text-gray-900">Buy, Sell, and Connect with PSU Students!</h1>
+        <p className="mt-2 text-gray-600">A safe marketplace exclusively for Penn State students.</p>
+
+        <div className="mt-6 flex justify-center gap-3">
+          <Link
+            href="/auth/login"
+            className="rounded-lg bg-blue-950 px-5 py-2 font-medium text-white transition-colors hover:bg-blue-900"
+          >
             Login
           </Link>
-          <Link href="/auth/signup" className="bg-green-500 text-white px-4 py-2 rounded-lg">
+          <Link
+            href="/auth/signup"
+            className="rounded-lg border border-blue-950 px-5 py-2 font-medium text-blue-950 transition-colors hover:bg-blue-50"
+          >
             Sign Up
           </Link>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

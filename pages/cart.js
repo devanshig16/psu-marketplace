@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { motion, AnimatePresence } from "framer-motion";
 import { db } from "../firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useUser } from "../UserContext"; // Assuming you're using a UserContext
@@ -109,44 +110,54 @@ const Cart = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold text-black">Your Cart</h1>
+    <div className="container mx-auto max-w-2xl p-4 pb-16">
+      <h1 className="text-2xl font-bold text-gray-900">Your Cart</h1>
 
       {cart.length === 0 ? (
-        <p>Your cart is empty.</p>
+        <p className="mt-8 text-center text-gray-500">Your cart is empty.</p>
       ) : (
-        <div>
-          <ul>
-            {cart.map((product) => (
-              <li key={product.productId} className="flex justify-between mt-4 p-4 border-b border-gray-300">
-                <div className="flex items-center">
-                  <img
-                    src={product.imageUrl}
-                    alt={product.title}
-                    className="w-20 h-20 object-cover mr-4"
-                  />
-                  <div>
-                    <p className="text-black">{product.title}</p>
-                    <p className="text-black">${(product.price * product.quantity).toFixed(2)}</p>
+        <div className="mt-4">
+          <ul className="divide-y divide-gray-200 rounded-xl border border-gray-200 bg-white shadow-sm">
+            <AnimatePresence initial={false}>
+              {cart.map((product) => (
+                <motion.li
+                  key={product.productId}
+                  initial={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center justify-between overflow-hidden p-4"
+                >
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={product.imageUrl}
+                      alt={product.title}
+                      className="h-16 w-16 rounded-lg object-cover"
+                    />
+                    <div>
+                      <p className="font-medium text-gray-900">{product.title}</p>
+                      <p className="text-sm text-gray-500">
+                        ${(product.price * product.quantity).toFixed(2)}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center">
                   <button
-                    className="bg-red-500 text-white px-2 py-1 rounded-lg"
-                    onClick={() => handleRemoveItem(product.productId)} // Use productId here
+                    className="rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                    onClick={() => handleRemoveItem(product.productId)}
                   >
                     Remove
                   </button>
-                </div>
-              </li>
-            ))}
+                </motion.li>
+              ))}
+            </AnimatePresence>
           </ul>
 
-          <div className="mt-4 flex justify-between">
-            <h2 className="text-xl font-semibold">Total: ${totalPrice.toFixed(2)}</h2>
+          <div className="mt-6 flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Total: ${totalPrice.toFixed(2)}
+            </h2>
             <button
               onClick={handleCheckout}
-              className="bg-green-600 text-white p-2 rounded-lg"
+              className="rounded-lg bg-blue-950 px-5 py-2.5 font-medium text-white transition-colors hover:bg-blue-900"
             >
               Checkout with Stripe
             </button>

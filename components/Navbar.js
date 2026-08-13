@@ -58,20 +58,26 @@ const Navbar = () => {
     return () => unsubscribe();
   }, [router]);
 
+  const linkClass = "text-sm font-medium text-blue-100 transition-colors hover:text-white";
+
   return (
-    <nav className="text-white bg-blue-900 p-4 flex justify-between items-center relative">
-      <Link href="/" className="text-xl font-bold">PSU Marketplace</Link>
+    <nav className="relative flex items-center justify-between bg-blue-950 px-6 py-3 shadow-sm">
+      <Link href="/" className="text-lg font-bold tracking-tight text-white">
+        PSU Marketplace
+      </Link>
 
       {loading ? (
-        <span>Loading...</span>
+        <span className="text-sm text-blue-200">Loading…</span>
       ) : user ? (
-        <div className="flex gap-4">
-          <Link href="/">Home</Link>
-          <Link href="/sell">Sell</Link>
-          <Link href="/profile">Profile</Link>
-          <Link href="/cart">Cart</Link>
+        <div className="flex items-center gap-5">
+          <Link href="/" className={linkClass}>Home</Link>
+          <Link href="/sell" className={linkClass}>Sell</Link>
+          <Link href="/profile" className={linkClass}>Profile</Link>
+          <Link href="/cart" className={linkClass}>Cart</Link>
 
-          <span className="mr-4">Welcome, {userName || "User"}</span>
+          <span className="hidden text-sm text-blue-200 sm:inline">
+            Welcome, {userName || "User"}
+          </span>
 
           <button
             onClick={async () => {
@@ -82,21 +88,21 @@ const Navbar = () => {
                 router.push("/auth/login");
               }
             }}
-            className="bg-blue-200 text-black px-3 py-1 rounded-md"
+            className="rounded-md bg-white/10 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/20"
           >
             Logout
           </button>
         </div>
       ) : (
-        <div className="flex gap-4">
-          <Link href="/auth/login">Login</Link>
-          <Link href="/auth/signup">Sign Up</Link>
+        <div className="flex items-center gap-5">
+          <Link href="/auth/login" className={linkClass}>Login</Link>
+          <Link href="/auth/signup" className={linkClass}>Sign Up</Link>
         </div>
       )}
 
       {/* Alert Message (Fades after 10 seconds) */}
       {alertMessage && (
-        <div className="absolute top-16 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-2 rounded-md transition-opacity duration-1000 fade-out">
+        <div className="absolute left-1/2 top-16 -translate-x-1/2 rounded-md bg-red-600 px-4 py-2 text-white shadow-lg transition-opacity duration-1000 fade-out">
           {alertMessage}
         </div>
       )}

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { motion } from "framer-motion";
 import { db } from "../firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
+import ProductCard from "../components/ProductCard";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -73,11 +75,6 @@ const Home = () => {
     setFilteredProducts(filtered);
   }, [categoryFilter, priceFilter, products]);
 
-  const GetMoreInfo = (product) => {
-    // Navigate to the dynamic product detail page
-    router.push(`/product/${product.id}`);
-  };
-
   // Handle category filter change
   const handleCategoryChange = (e) => {
     setCategoryFilter(e.target.value);
@@ -89,18 +86,19 @@ const Home = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold text-black">Latest Listings</h1>
-  
+    <div className="container mx-auto p-4 pb-16">
+      <h1 className="text-2xl font-bold text-gray-900">Latest Listings</h1>
+
       {/* Filter Section */}
-      <div className="flex space-x-4 mt-4">
-        {/* Category Filter Dropdown */}
-        <div className="flex-1">
-          <label className="text-black font-medium mb-2">Filter by Category   </label>
+      <div className="mt-4 flex flex-wrap gap-4">
+        <div>
+          <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-gray-500">
+            Category
+          </label>
           <select
             value={categoryFilter}
             onChange={handleCategoryChange}
-            className="w-auto p-2 border border-gray-300 text-black rounded-lg shadow-md mt-2"  
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-900"
           >
             <option value="">All Categories</option>
             {categories.map((category, index) => (
@@ -110,14 +108,15 @@ const Home = () => {
             ))}
           </select>
         </div>
-  
-        {/* Price Range Filter Dropdown */}
-        <div className="flex-1">
-          <label className="text-black font-medium mb-2">Filter by Price   </label>
+
+        <div>
+          <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-gray-500">
+            Price
+          </label>
           <select
             value={priceFilter}
             onChange={handlePriceChange}
-            className="w-auto p-2 border border-gray-300 text-black  rounded-lg shadow-md mt-2"  
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-900"
           >
             <option value="">All Price Ranges</option>
             {priceRanges.map((range) => (
@@ -128,38 +127,25 @@ const Home = () => {
           </select>
         </div>
       </div>
-  
+
       {/* Displaying filtered products */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
-            <div key={product.id} className="bg-white p-4 rounded-lg shadow-md">
-              <img
-                src={product.imageUrl}
-                alt={product.title}
-                className="w-full h-40 object-cover rounded"
-              />
-              <h2 className="text-black font-bold mt-2">{product.title}</h2>
-              <p className="text-black">${product.price}</p>
-              <p className="text-black">{product.description}</p>
-              <button
-                type="button"
-                className="w-full bg-blue-900 text-white p-2 mt-4 rounded-lg"
-                onClick={() => GetMoreInfo(product)}
-              >
-                More Info
-              </button>
-            </div>
-          ))
-        ) : (
-          <p className="text-center text-black">No products available</p>
-        )}
-      </div>
+      {filteredProducts.length > 0 ? (
+        <motion.div
+          layout
+          className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3"
+        >
+          {filteredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </motion.div>
+      ) : (
+        <div className="mt-16 flex flex-col items-center justify-center text-center">
+          <p className="text-lg font-medium text-gray-700">No listings match those filters yet</p>
+          <p className="mt-1 text-sm text-gray-400">Try a different category or price range.</p>
+        </div>
+      )}
     </div>
   );
-  
-  
-  
 };
 
 export default Home;
