@@ -4,6 +4,8 @@ A campus marketplace for Penn State students to buy and sell with each other —
 
 Stress-tested with 10,000+ simulated transactions against the backend; resolved every bottleneck it surfaced and validated horizontal scalability with zero critical failures at peak load.
 
+**Live:** [psu-marketplace-woad.vercel.app](https://psu-marketplace-woad.vercel.app) — browsing/listings work fully; Stripe checkout needs `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` set in the Vercel project to go live.
+
 ## Features
 
 - Product listings with image uploads, browsing, and a shopping cart
